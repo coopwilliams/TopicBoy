@@ -1,3 +1,4 @@
+import ebooklib
 from bs4 import BeautifulSoup
 from ebooklib import epub
 from pdfminer.high_level import extract_text
@@ -28,13 +29,14 @@ def read_EPUB(filepath):
         'script',
     ]
 
+    book = epub.read_epub(filepath)
+
     # get EPUB content as HTML chapters
-    def epub2thtml(epub_path):
-        book = epub.read_epub(epub_path)
+    def epub2thtml(book):
         chapters = []
         for item in book.get_items():
             if item.get_type() == ebooklib.ITEM_DOCUMENT:
-            chapters.append(item.get_content())
+                chapters.append(item.get_content()) 
         return chapters
 
     # get HTML chapter as text
@@ -44,7 +46,7 @@ def read_EPUB(filepath):
         text = soup.find_all(text=True)
         for t in text:
             if t.parent.name not in blacklist:
-            output += '{} '.format(t)
+                output += '{} '.format(t)
         return output
 
     # parse all html chapters
@@ -56,8 +58,8 @@ def read_EPUB(filepath):
         return " ".join(output)
 
     # return full text
-    def epub2text(epub_path):
-        chapters = epub2thtml(epub_path)
+    def epub2text(book):
+        chapters = epub2thtml(book)
         ttext = thtml2ttext(chapters)
         return ttext
 
@@ -71,7 +73,7 @@ def read_EPUB(filepath):
             elif key == target:
                 yield value
 
-    full_text = epub2text(filepath)
+    full_text = epub2text(book)
     title = next(find_by_key(book.metadata, 'title'))
     author = next(find_by_key(book.metadata, 'creator'))
 
