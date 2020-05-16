@@ -14,9 +14,14 @@ class ReadingTest(unittest.TestCase):
     def test_EPUB(self):
         for i in self.test_documents:
             if i[-4:] == "epub":
-                text = reader.read_EPUB(test_dir + "/" + i)
-        print(text)
-        self.assertGreater(len(text), 0)
+                doc = reader.read_EPUB(test_dir + "/" + i)
+        self.assertGreater(len(doc['full_text']), 0)
+    
+    def test_PDF(self):
+        for i in self.test_documents:
+            if i[-3:] == "pdf":
+                doc = reader.read_PDF(test_dir + "/" + i)
+        self.assertGreater(len(doc['full_text']), 0)
 
 if __name__ == '__main__':
     unittest.main()
