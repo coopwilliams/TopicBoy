@@ -2,7 +2,7 @@ from ebooklib import epub
 from pdfminer.high_level import extract_text
 
 # define functions that take a document and produce
-# the full text as a string.
+# the full text with metadata.
 
 def read_PDF(filepath):
     full_text = extract_text(filepath)
