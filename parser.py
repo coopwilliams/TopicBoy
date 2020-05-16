@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 from ebooklib import epub
 from pdfminer.high_level import extract_text
 
@@ -16,7 +17,49 @@ def read_PDF(filepath):
     return doc
 
 def read_EPUB(filepath):
-    book = epub.read_epub(filepath)
+    blacklist = [
+        '[document]',
+        'noscript', 
+        'header',   
+        'html', 
+        'meta', 
+        'head',
+        'input', 
+        'script',
+    ]
+
+    # get EPUB content as HTML chapters
+    def epub2thtml(epub_path):
+        book = epub.read_epub(epub_path)
+        chapters = []
+        for item in book.get_items():
+            if item.get_type() == ebooklib.ITEM_DOCUMENT:
+            chapters.append(item.get_content())
+        return chapters
+
+    # get HTML chapter as text
+    def chap2text(chap):
+        output = ''
+        soup = BeautifulSoup(chap, 'html.parser')
+        text = soup.find_all(text=True)
+        for t in text:
+            if t.parent.name not in blacklist:
+            output += '{} '.format(t)
+        return output
+
+    # parse all html chapters
+    def thtml2ttext(thtml):
+        output = []
+        for html in thtml:
+            text = chap2text(html)
+            output.append(text)
+        return " ".join(output)
+
+    # return full text
+    def epub2text(epub_path):
+        chapters = epub2thtml(epub_path)
+        ttext = thtml2ttext(chapters)
+        return ttext
 
     # this package has a get_metadata() function.
     # But this helper function will get the same result
@@ -28,8 +71,7 @@ def read_EPUB(filepath):
             elif key == target:
                 yield value
 
-    # TODO: figure out how to read the text (currently bytestring)
-
+    full_text = epub2text(filepath)
     title = next(find_by_key(book.metadata, 'title'))
     author = next(find_by_key(book.metadata, 'creator'))
 
@@ -45,6 +87,7 @@ def read_EPUB(filepath):
         'title' : title,
         'author' : author,
     }
+    
     return doc
 
 def read_MOBI(filepath):
