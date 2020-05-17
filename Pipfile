@@ -9,6 +9,7 @@ verify_ssl = true
 ebooklib = "*"
 beautifulsoup4 = "*"
 pdfminer-six = "*"
+mobi-python = "*"
 
 [requires]
 python_version = "3.7"

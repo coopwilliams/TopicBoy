@@ -1,7 +1,11 @@
 import ebooklib
 from bs4 import BeautifulSoup
 from ebooklib import epub
+from mobi import Mobi
 from pdfminer.high_level import extract_text
+
+
+
 
 # define functions that take a document and produce
 # the full text with metadata.
@@ -30,6 +34,15 @@ def read_EPUB(filepath):
     ]
 
     book = epub.read_epub(filepath)
+
+    # Get metadata regardless of the namespace, 
+    # which for EPUBs can be 'DC' or 'OPF'
+    def find_by_key(data, target):
+        for key, value in data.items():
+            if isinstance(value, dict):
+                yield from find_by_key(value, target)
+            elif key == target:
+                yield value
 
     # get EPUB content as HTML chapters
     def epub2thtml(book):
@@ -63,16 +76,6 @@ def read_EPUB(filepath):
         ttext = thtml2ttext(chapters)
         return ttext
 
-    # this package has a get_metadata() function.
-    # But this helper function will get the same result
-    # regardless of the namespace, which can be 'DC' or 'OPF'
-    def find_by_key(data, target):
-        for key, value in data.items():
-            if isinstance(value, dict):
-                yield from find_by_key(value, target)
-            elif key == target:
-                yield value
-
     full_text = epub2text(book)
     title = next(find_by_key(book.metadata, 'title'))
     author = next(find_by_key(book.metadata, 'creator'))
@@ -93,7 +96,25 @@ def read_EPUB(filepath):
     return doc
 
 def read_MOBI(filepath):
-    pass
+    book = Mobi(filepath)
+    book.parse()
+
+    records = []
+    for record in book:
+        records.append(record)
+
+    full_text = ' '.join(records)
+    title = book.title().decode('utf-8')
+    author = book.author().decode('utf-8')
+
+    doc = {
+        'filepath' : filepath,
+        'full_text' : full_text,
+        'title' : title,
+        'author' : author,
+    }
+
+    return doc
 
 def read_DOCX(filepath):
     pass
