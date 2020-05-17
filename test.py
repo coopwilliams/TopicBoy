@@ -15,12 +15,30 @@ class ReadingTest(unittest.TestCase):
         for i in self.test_documents:
             if i[-4:] == "epub":
                 doc = reader.read_EPUB(test_dir + "/" + i)
+        print(doc['filepath'])
+        print(doc['title'])
+        print(doc['author'])
+        print(doc['full_text'][10:], "\n")
         self.assertGreater(len(doc['full_text']), 0)
     
     def test_PDF(self):
         for i in self.test_documents:
             if i[-3:] == "pdf":
                 doc = reader.read_PDF(test_dir + "/" + i)
+        print(doc['filepath'])
+        print(doc['title'])
+        print(doc['author'])
+        print(doc['full_text'][10:], "\n")
+        self.assertGreater(len(doc['full_text']), 0)
+    
+    def test_MOBI(self):
+        for i in self.test_documents:
+            if i[-4:] == "mobi":
+                doc = reader.read_MOBI(test_dir + "/" + i)
+        print(doc['filepath'])
+        print(doc['title'])
+        print(doc['author'])
+        print(doc['full_text'][10:], "\n")
         self.assertGreater(len(doc['full_text']), 0)
 
 if __name__ == '__main__':
