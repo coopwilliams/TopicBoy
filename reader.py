@@ -1,4 +1,5 @@
 import ebooklib
+import re
 from bs4 import BeautifulSoup
 from ebooklib import epub
 from mobi import Mobi
@@ -10,12 +11,12 @@ from pdfminer.high_level import extract_text
 # define functions that take a document and produce
 # the full text with metadata.
 
-def read_PDF(filepath):
+def read_pdf(filepath):
     try:
         full_text = extract_text(filepath)
     except:
         full_text = ""
-        
+
     doc = {
         'filepath' : filepath,
         'full_text' : full_text,
@@ -24,7 +25,7 @@ def read_PDF(filepath):
     }
     return doc
 
-def read_EPUB(filepath):
+def read_epub(filepath):
     blacklist = [
         '[document]',
         'noscript', 
@@ -62,7 +63,7 @@ def read_EPUB(filepath):
         text = soup.find_all(text=True)
         for t in text:
             if t.parent.name not in blacklist:
-                output += '{} '.format(t)
+                output += '{0} '.format(t)
         return output
 
     # parse all html chapters
@@ -71,7 +72,7 @@ def read_EPUB(filepath):
         for html in thtml:
             text = chap2text(html)
             output.append(text)
-        return " ".join(output)
+        return "".join(output)
 
     # return full text
     def epub2text(book):
@@ -98,7 +99,7 @@ def read_EPUB(filepath):
     
     return doc
 
-def read_MOBI(filepath):
+def read_mobi(filepath):
     book = Mobi(filepath)
     book.parse()
 
@@ -119,9 +120,9 @@ def read_MOBI(filepath):
 
     return doc
 
-def read_DOCX(filepath):
+def read_docx(filepath):
     pass
 
-def read_TXT(filepath):
+def read_txt(filepath):
     pass
 
