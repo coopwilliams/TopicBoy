@@ -126,3 +126,9 @@ def read_docx(filepath):
 def read_txt(filepath):
     pass
 
+if __name__ == "__main__":
+    try:
+        epub = read_epub("test_files/slightly.epub")
+        pdf = read_pdf("test_files/ncnl.pdf")
+    except:
+        print("couldn't rest the test files.")
