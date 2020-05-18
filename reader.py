@@ -11,8 +11,11 @@ from pdfminer.high_level import extract_text
 # the full text with metadata.
 
 def read_PDF(filepath):
-    full_text = extract_text(filepath)
-    
+    try:
+        full_text = extract_text(filepath)
+    except:
+        full_text = ""
+        
     doc = {
         'filepath' : filepath,
         'full_text' : full_text,
