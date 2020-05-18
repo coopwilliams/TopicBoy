@@ -1,12 +1,15 @@
 import ebooklib
+import os
 import re
+import zipfile
 from bs4 import BeautifulSoup
 from ebooklib import epub
 from mobi import Mobi
 from pdfminer.high_level import extract_text
 
-
-
+ROAM_DIR_PATH = r"C:\Users\Cooper\Documents\07_Misc_Notes\Roam_exports"
+ROAM_LATEST_EXPORT_PATH = ""
+HOME_PATH = os.getcwd()
 
 # define functions that take a document and produce
 # the full text with metadata.
@@ -126,9 +129,43 @@ def read_docx(filepath):
 def read_txt(filepath):
     pass
 
+def unpack_roam(dirpath):
+    """Unpack the latest Roam Research export, set ROAM_PATH"""
+    os.chdir(dirpath)
+    
+    # Find most recent Roam Export
+    latest_export = 0
+    for file in os.listdir():
+        if file[-4:] == ".zip" and file[:12] == "Roam-Export-":
+            export_id = int(file.lstrip("Roam-Export-")[:-4])
+            if export_id > latest_export:
+                latest_export = export_id
+
+    # If it hasn't been unpacked, unpack it
+    target_name = "Roam-Export-" + str(latest_export)
+    target_path = os.path.join(dirpath, target_name)
+
+    if not os.path.exists(target_path):
+        with zipfile.ZipFile(target_path + ".zip", 'r') as zip_ref:
+            zip_ref.extractall(target_path)
+    else:
+        print("latest export found")
+        
+    # set target path for read_roam() to find
+    global ROAM_LATEST_EXPORT_PATH
+    ROAM_LATEST_EXPORT_PATH = target_path
+    
+    # change working directory back to home
+    os.chdir(HOME_PATH)
+
+def read_roam(filepath):
+    pass
+
 if __name__ == "__main__":
     try:
-        epub = read_epub("test_files/slightly.epub")
-        pdf = read_pdf("test_files/ncnl.pdf")
-    except:
-        print("couldn't rest the test files.")
+        # epub = read_epub("test_files/slightly.epub")
+        # pdf = read_pdf("test_files/ncnl.pdf")
+        unpack_roam(ROAM_DIR_PATH)
+    except Exception as e:
+        print(e)
+        print("couldn't read the test files.")
