@@ -10,6 +10,7 @@ ebooklib = "*"
 beautifulsoup4 = "*"
 pdfminer-six = "*"
 mobi-python = "*"
+fuzzywuzzy = "*"
 
 [requires]
 python_version = "3.7"

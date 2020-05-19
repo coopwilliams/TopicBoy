@@ -184,7 +184,9 @@ if __name__ == "__main__":
         # epub = read_epub("test_files/slightly.epub")
         # pdf = read_pdf("test_files/ncnl.pdf")
         unpack_roam(ROAM_DIR_PATH)
-        read_roam(ROAM_DIR_PATH)
+        roam = read_roam(ROAM_DIR_PATH)
+        from finder import *
+        poly = one_note_by_title(roam, "polycentrix law", fuzzy=True)
     except Exception as e:
         print(e)
         print("couldn't read the test files.")
