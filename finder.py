@@ -78,14 +78,12 @@ def contains_string(note, string, substring=False):
 
     # return True if any child note contains search string
     if "children" in note.keys():
-        found = False
-        while not found:
-            for child in note['children']:
-                found = contains_string(child, string, substring=substring)
-                if found:
-                    return True
-            # print("search failed for all children")
-            return False
+        for child in note['children']:
+            found = contains_string(child, string, substring=substring)
+            if found:
+                return True
+        # print("search failed for all children")
+        return False
     else:
         # print("no children in this note")
         return False
