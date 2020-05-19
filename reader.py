@@ -1,4 +1,5 @@
 import ebooklib
+import json
 import os
 import re
 import zipfile
@@ -159,13 +160,31 @@ def unpack_roam(dirpath):
     os.chdir(HOME_PATH)
 
 def read_roam(filepath):
-    pass
+    """Read the latest unpacked Roam Research export (JSON)"""
+
+    # Make sure .zip file has been unpacked
+    if not ROAM_LATEST_EXPORT_PATH:
+        unpack_roam(ROAM_DIR_PATH)
+
+    # get the file
+    os.chdir(ROAM_LATEST_EXPORT_PATH)
+    roam_file = os.listdir()[0]
+    
+    with open(roam_file, encoding='latin-1') as json_file:
+        roam_journal = json.load(json_file)  
+
+    return roam_journal
+
+
+
+
 
 if __name__ == "__main__":
     try:
         # epub = read_epub("test_files/slightly.epub")
         # pdf = read_pdf("test_files/ncnl.pdf")
         unpack_roam(ROAM_DIR_PATH)
+        read_roam(ROAM_DIR_PATH)
     except Exception as e:
         print(e)
         print("couldn't read the test files.")
