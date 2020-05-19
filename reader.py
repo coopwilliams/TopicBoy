@@ -187,6 +187,10 @@ if __name__ == "__main__":
         roam = read_roam(ROAM_DIR_PATH)
         from finder import *
         poly = one_note_by_title(roam, "polycentrix law", fuzzy=True)
+        for i in roam:
+            if i['title'] == 'my favorite books':
+                books = i
+        contains_string(books, "Top")
     except Exception as e:
         print(e)
         print("couldn't read the test files.")
