@@ -121,7 +121,7 @@ def notes_by_string(roam_journal, string, substring=False,
 
 def yield_text(note):
     """
-    Generator the uses DFT to extract all text from a child note
+    Generator that uses DFT to extract all text from a child note
     """
     if not "uid" in note.keys():
         if "children" in note.keys():
