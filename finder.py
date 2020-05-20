@@ -30,7 +30,6 @@ def one_note_by_title(roam_journal, query, fuzzy=False):
 
     if fuzzy is True:
         to_match = process.extractOne(query, titles.keys())[0]
-        print("fuzzy matched", to_match)
     else:
         to_match = query
 
@@ -38,7 +37,6 @@ def one_note_by_title(roam_journal, query, fuzzy=False):
         match = titles[to_match]
     except KeyError:
         # if non-fuzzy matching finds no match, return an empty dictionary
-        print("keyerror")
         match = dict()
 
     return match
@@ -121,14 +119,14 @@ def notes_by_string(roam_journal, string, substring=False,
     return matches
 
 
-def extract_text(note):
+def yield_text(note):
     """
     Generator the uses DFT to extract all text from a child note
     """
     if not "uid" in note.keys():
         if "children" in note.keys():
             for child in note['children']:
-                yield from extract_text(child)
+                yield from yield_text(child)
         else:
             yield ""
     else:
@@ -136,7 +134,7 @@ def extract_text(note):
             yield note['string']
         if "children" in note.keys():
             for child in note['children']:
-                yield from extract_text(child)
+                yield from yield_text(child)
 
 
 def text_by_string(roam_journal, string, substring=False, lines_only=False,
@@ -170,10 +168,10 @@ def text_by_string(roam_journal, string, substring=False, lines_only=False,
     texts = []
     for note in matches:
         if lines_only:
-            for text in extract_text(note):
+            for text in yield_text(note):
                 if string in text:
                     texts.append(text) 
         else:
-            texts.append(" ".join(list(extract_text(note))))
+            texts.append(" ".join(list(yield_text(note))))
 
     return texts
