@@ -190,7 +190,10 @@ if __name__ == "__main__":
         for i in roam:
             if i['title'] == 'my favorite books':
                 books = i
-        contains_string(books, "Top")
+        containing = contains_string(books, "Top")
+        extracted = extract_text(books)
+        happy = notes_by_string(roam, "happy")
+        happy_text = text_by_string(roam, "happy", True, True)
     except Exception as e:
         print(e)
         print("couldn't read the test files.")
