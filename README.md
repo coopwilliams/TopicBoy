@@ -1,2 +1,2 @@
 # TopicBoy
-app for matching topics in a Roam journal to documents in a directory.
+NLP tool for finding topics from your Roam journal in your personal library.
