@@ -174,26 +174,3 @@ def read_roam(filepath):
         roam_journal = json.load(json_file)  
 
     return roam_journal
-
-
-
-
-
-if __name__ == "__main__":
-    try:
-        # epub = read_epub("test_files/slightly.epub")
-        # pdf = read_pdf("test_files/ncnl.pdf")
-        unpack_roam(ROAM_DIR_PATH)
-        roam = read_roam(ROAM_DIR_PATH)
-        from finder import *
-        poly = one_note_by_title(roam, "polycentrix law", fuzzy=True)
-        for i in roam:
-            if i['title'] == 'my favorite books':
-                books = i
-        containing = contains_string(books, "Top")
-        extracted = extract_text(books)
-        happy = notes_by_string(roam, "happy")
-        happy_text = text_by_string(roam, "happy", True, True)
-    except Exception as e:
-        print(e)
-        print("couldn't read the test files.")
