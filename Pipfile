@@ -11,6 +11,7 @@ beautifulsoup4 = "*"
 pdfminer-six = "*"
 mobi-python = "*"
 fuzzywuzzy = "*"
+ftfy = "*"
 
 [requires]
 python_version = "3.7"

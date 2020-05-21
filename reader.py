@@ -1,4 +1,5 @@
 import ebooklib
+import ftfy.bad_codecs
 import json
 import os
 import re
@@ -170,7 +171,7 @@ def read_roam(filepath):
     os.chdir(ROAM_LATEST_EXPORT_PATH)
     roam_file = os.listdir()[0]
     
-    with open(roam_file, encoding='latin-1') as json_file:
+    with open(roam_file, encoding='utf-8') as json_file:
         roam_journal = json.load(json_file)  
 
     return roam_journal
