@@ -12,6 +12,7 @@ pdfminer-six = "*"
 mobi-python = "*"
 fuzzywuzzy = "*"
 ftfy = "*"
+spacy = "*"
 
 [requires]
 python_version = "3.7"
