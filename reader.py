@@ -174,4 +174,7 @@ def read_roam(filepath):
     with open(roam_file, encoding='utf-8') as json_file:
         roam_journal = json.load(json_file)  
 
+    # change working directory back to home
+    os.chdir(HOME_PATH)
+
     return roam_journal
