@@ -1,5 +1,22 @@
 from finder import *
+from preprocessing import *
 from reader import *
+from recommender import *
+
+
+### Outlining the core functionality
+# This tool might get a GUI or it might just be a CLI.
+# So how do I write an API that works for either frontend?
+
+# the API needs to return:
+    # - related documents
+    #     - title
+    #     - filepath
+    #     - page number
+    #     - text 
+    #     + Perhaps I should just store the filepath and page, then call
+    #         + up the doc on demand.
+
 
 if __name__ == "__main__":
     try:
