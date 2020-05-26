@@ -2,6 +2,7 @@
 *.pdf 
 *.epub
 *.mobi
+data/library_vectors/*.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
