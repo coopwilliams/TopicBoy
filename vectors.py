@@ -5,7 +5,6 @@ import spacy
 import numpy as np
 from finder import yield_text
 from preprocessing import *
-from scipy.
 from reader import *
 
 
@@ -176,7 +175,30 @@ def create_library_vectors(dirpath=LIBRARY_DIRPATH,
         json.dump(vec_store, outfile, cls=NumpyEncoder)
 
 
+def library_knn(vector, k=5, ord=None):
 
+    """
+    Given a vector, K nearest neighbors from library vectors.
+    
+    Parameters
+    ----------
+    vector : ndarray
+        array matching the dimension of the language model in use.
+
+    k : int
+        number of neighbors to return
+
+    ord : {non-zero int, inf, -inf, ‘fro’, ‘nuc’}, optional
+        order of the norm (param for np.linalg.norm())
+
+    Returns
+    -------
+    docs : list
+        list of matching documents 
+    """
+
+    
+    
 
 if __name__ == "__main__":
     create_library_vectors(filetypes=['epub'])
