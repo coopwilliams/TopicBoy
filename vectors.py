@@ -20,7 +20,7 @@ except:
 LIBRARY_DIRPATH = r"C:\Users\Cooper\Documents\06_Misc\1_BOOKS"
 DEFAULT_FILETYPES = ["pdf", "epub"]
 LIBRARY_VECTORS_PATH = r"data/library_vectors/library_vectors.json"
-
+# TODO: put all these paths in the config
 
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -29,7 +29,7 @@ class NumpyEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def load_library_vectors(dirpath=LIBRARY_DIRPATH):
+def load_library_vectors(library_vectors_path=LIBRARY_VECTORS_PATH):
 
     """
     Loads library vectors from JSON to list, returning an empty list if
@@ -39,6 +39,18 @@ def load_library_vectors(dirpath=LIBRARY_DIRPATH):
     if os.path.exists(library_vectors_path):
         with open(library_vectors_path, encoding='utf-8') as json_file:
             vec_store = json.load(json_file)
+
+        # deserialize ndarrays
+        for doc in vec_store:
+            if "vector" in doc.keys():
+                doc["vector"] = np.array(doc["vector"])
+                
+            # remove docs missing vectors
+            else:
+                vec_store.remove(doc)
+        
+        return vec_store
+
     else:
         return list()
 
@@ -96,6 +108,7 @@ def vectorize_note(note):
 
 
 def create_library_vectors(dirpath=LIBRARY_DIRPATH, 
+                           library_vectors_path=LIBRARY_VECTORS_PATH,
                            filetypes=DEFAULT_FILETYPES):
     """
     Infer vectors for all new documents of the types specified, and store them
@@ -197,8 +210,19 @@ def library_knn(vector, k=5, ord=None):
         list of matching documents 
     """
 
+    vec_store = load_library_vectors()
+    diffs = []
     
+    # calculate distance for all vectors
+    for doc in vec_store:
+        diffs.append(np.linalg.norm(vector - doc["vector"], ord=ord))
     
+    # partial sort to get indices for most similar documents
+    ind = np.argpartition(diffs, k)[:k]
+    print(ind)
+    docs = list(np.array(vec_store)[ind])
+
+    return docs
 
 if __name__ == "__main__":
     create_library_vectors(filetypes=['epub'])
