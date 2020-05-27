@@ -3,8 +3,11 @@ import json
 import os
 import spacy
 import numpy as np
-from reader import *
+from finder import yield_text
 from preprocessing import *
+from scipy.
+from reader import *
+
 
 # load nlp model
 try:
@@ -19,11 +22,79 @@ LIBRARY_DIRPATH = r"C:\Users\Cooper\Documents\06_Misc\1_BOOKS"
 DEFAULT_FILETYPES = ["pdf", "epub"]
 LIBRARY_VECTORS_PATH = r"data/library_vectors/library_vectors.json"
 
+
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
         return json.JSONEncoder.default(self, obj)
+
+
+def load_library_vectors(dirpath=LIBRARY_DIRPATH):
+
+    """
+    Loads library vectors from JSON to list, returning an empty list if
+    file does not exist.
+    """
+
+    if os.path.exists(library_vectors_path):
+        with open(library_vectors_path, encoding='utf-8') as json_file:
+            vec_store = json.load(json_file)
+    else:
+        return list()
+
+
+def vectorize_text(text):
+    
+    """
+    Infer vector for a string of text. Handles extremely large strings.
+    """
+
+    # If text is too long for NER, chunk and then average vectors
+    # This is kind of hacky but it might work.
+    n = 1000000
+    vectors = [nlp(text[i:i+n]).vector for i in range(0, len(text), n)]
+    
+    # disregard docs that can't be vectorized
+    if len(vectors) == 0:
+        return None
+
+    # infer vector
+    return sum(vectors) / len(vectors)
+
+
+def vectorize_note(note):
+    
+    """
+    Infer a vector for a note in a roam database.
+    """
+    
+    note_text = ""
+
+    # create one string from note using depth-first traversal
+    for line in yield_text(note):
+        if len(line) < 1:
+            continue
+
+        # join lines with full stops if they're not there already
+        if line[-1] == '.':
+            note_text += line
+        else:
+            note_text += line + '.'
+
+    if len(note_text) == 0:
+        return "None"
+
+    # preprocess text
+    note_text = remove_special(note_text)
+
+    # vectorize text, returning vector for "None" if it fails
+    vec = vectorize_text(note_text)
+    if vec is not None:
+        return vec
+    else:
+        return nlp("None").vector
+
 
 def create_library_vectors(dirpath=LIBRARY_DIRPATH, 
                            filetypes=DEFAULT_FILETYPES):
@@ -50,18 +121,14 @@ def create_library_vectors(dirpath=LIBRARY_DIRPATH,
     Creates a JSON array of labeled vectors corresponding to documents,
     and stores it in in data/library_vectors
     """
-
-    # Get any vectors that already exist
-    done_paths = []
-    if os.path.exists(LIBRARY_VECTORS_PATH):
-        with open(LIBRARY_VECTORS_PATH, encoding='utf-8') as json_file:
-            vec_store = json.load(json_file)
         
-        # get paths of documents that are already processed
-        for entry in vec_store:
-            done_paths.append(entry['filepath'])
-    else:
-        vec_store = []
+    # Get any vectors that already exist
+    vec_store = load_library_vectors(library_vectors_path)
+    
+    # get paths of documents that are already processed
+    done_paths = []
+    for entry in vec_store:
+        done_paths.append(entry['filepath'])
 
     # Get new files to process
     new_paths = []
@@ -70,7 +137,7 @@ def create_library_vectors(dirpath=LIBRARY_DIRPATH,
 
     new_paths = list(set(new_paths).difference(set(done_paths)))
 
-    print(new_paths, done_paths)
+    print(new_paths)
 
     # read files
     new_docs = []
@@ -91,21 +158,12 @@ def create_library_vectors(dirpath=LIBRARY_DIRPATH,
         # preprocess text
         doc["full_text"] = remove_special(doc["full_text"])
 
-        # If text is too long for NER, chunk and then average vectors
-        # This is kind of hacky but it might work.
-        print(doc['title'])
-        text = doc["full_text"]
-        n = 1000000
-        print(len(text))
-        vectors = [nlp(text[i:i+n]).vector for i in range(0, len(text), n)]
-        
-        # disregard docs that can't be vectorized
-        if len(vectors) == 0:
+        # infer vector, removing docs that can't be vectorized
+        vec = vectorize_text(doc["full_text"])
+        if vec is None:
             new_docs.remove(doc)
-            continue
-
-        # infer vector
-        doc["vector"] = sum(vectors) / len(vectors)
+        else:
+            doc["vector"] = vec
 
         # remove full text
         doc.pop("full_text", None)
@@ -116,6 +174,8 @@ def create_library_vectors(dirpath=LIBRARY_DIRPATH,
     # Save
     with open(LIBRARY_VECTORS_PATH, "w", encoding="utf8") as outfile:
         json.dump(vec_store, outfile, cls=NumpyEncoder)
+
+
 
 
 if __name__ == "__main__":

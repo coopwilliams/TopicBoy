@@ -1,8 +1,7 @@
 from finder import *
 from preprocessing import *
 from reader import *
-from recommender import *
-
+from vectors import *
 
 ### Outlining the core functionality
 # This tool might get a GUI or it might just be a CLI.
@@ -28,6 +27,8 @@ if __name__ == "__main__":
         happy = notes_by_string(roam, "happy")
         happy_text = text_by_string(roam, "happy", True, True)
         bau = text_by_string(roam, "Baudrillard", True, True)
+        vec = vectorize_note(books)
+
     except Exception as e:
         print("couldn't read the test files.")
         raise(e)

@@ -173,5 +173,6 @@ def text_by_string(roam_journal, string, substring=False, lines_only=False,
                     texts.append(text) 
         else:
             texts.append(" ".join(list(yield_text(note))))
+            # TODO: consider breaking out fullstop concatenation into a func
 
     return texts
