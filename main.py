@@ -28,7 +28,7 @@ if __name__ == "__main__":
         happy_text = text_by_string(roam, "happy", True, True)
         bau = text_by_string(roam, "Baudrillard", True, True)
         vec = vectorize_note(books)
-
+        knn = library_knn(vec)
     except Exception as e:
         print("couldn't read the test files.")
         raise(e)
